@@ -8,16 +8,44 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { SITE, whatsappLink } from "@/lib/site";
 
+const SITE_URL = "https://nyeneng-builds-futures.lovable.app";
+const SERVICES_URL = `${SITE_URL}/services`;
+const SERVICES_TITLE = "Construction, Boreholes, Plumbing & Electrical Services in Rustenburg | Nyeneng";
+const SERVICES_DESC = "Trusted Rustenburg builders for new homes, borehole drilling, JoJo tanks, plumbing, electrical (COC), welding, tiling & materials supply across the North West. Get a free WhatsApp quote.";
+
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services | Construction, Boreholes, Plumbing, Electrical — Nyeneng" },
-      { name: "description", content: "Residential construction, borehole drilling, JoJo tanks, plumbing, electrical, welding, tiling & material supply across Rustenburg & North West." },
-      { property: "og:title", content: "Our Services — Nyeneng Trading & Projects" },
-      { property: "og:description", content: "Seven core trades, one reliable partner. Rustenburg, North West." },
-      { property: "og:url", content: "/services" },
+      { title: SERVICES_TITLE },
+      { name: "description", content: SERVICES_DESC },
+      { name: "keywords", content: "construction Rustenburg, borehole drilling North West, JoJo tank installation, plumber Rustenburg, electrician COC, welding fabrication, tiling, building materials" },
+      { name: "robots", content: "index, follow" },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Nyeneng Trading & Projects" },
+      { property: "og:title", content: SERVICES_TITLE },
+      { property: "og:description", content: SERVICES_DESC },
+      { property: "og:url", content: SERVICES_URL },
+      { property: "og:locale", content: "en_ZA" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: SERVICES_TITLE },
+      { name: "twitter:description", content: SERVICES_DESC },
     ],
-    links: [{ rel: "canonical", href: "/services" }],
+    links: [{ rel: "canonical", href: SERVICES_URL }],
+    scripts: [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: "Nyeneng Services",
+        itemListElement: [
+          "Residential Construction", "Water Security Solutions", "Electrical Services",
+          "Plumbing", "Welding & Fabrication", "Tiling & Finishing", "Materials Supply",
+        ].map((name, i) => ({
+          "@type": "ListItem", position: i + 1,
+          item: { "@type": "Service", name, areaServed: "Rustenburg, North West, South Africa", provider: { "@type": "LocalBusiness", name: "Nyeneng Trading & Projects" } },
+        })),
+      }),
+    }],
   }),
   component: ServicesPage,
 });
@@ -62,12 +90,21 @@ const SERVICES = [
 
 const SERVICE_TITLES = SERVICES.map((s) => s.title);
 
+const contactRegex = /^(?:\+?\d[\d\s\-()]{6,}|[^\s@]+@[^\s@]+\.[^\s@]+)$/;
 const schema = z.object({
-  name: z.string().trim().min(2, "Please enter your name").max(100),
-  contact: z.string().trim().min(7, "Phone or email required").max(100),
-  service: z.string().min(1, "Please choose a service"),
-  location: z.string().trim().min(2, "Where is the project?").max(120),
-  details: z.string().trim().max(600).optional().or(z.literal("")),
+  name: z.string().trim()
+    .min(2, "Please enter your full name (at least 2 characters).")
+    .max(100, "Name is too long — please keep it under 100 characters.")
+    .regex(/^[\p{L}\s'.-]+$/u, "Name can only contain letters, spaces, hyphens and apostrophes."),
+  contact: z.string().trim()
+    .min(7, "Please enter a phone number or email so we can reply.")
+    .max(100, "That contact looks too long — please double-check it.")
+    .regex(contactRegex, "Enter a valid phone number (e.g. 072 123 4567) or email address."),
+  service: z.string().min(1, "Please pick the service you need."),
+  location: z.string().trim()
+    .min(2, "Tell us where the project is (suburb / town).")
+    .max(120, "Location is too long — please shorten it."),
+  details: z.string().trim().max(600, "Please keep details under 600 characters.").optional().or(z.literal("")),
 });
 
 function ServicesPage() {
@@ -132,28 +169,64 @@ function ServicesPage() {
 function QuoteForm({ services }: { services: string[] }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const clearFieldError = (name: string) => {
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    if (submitting) return;
+    setFormError(null);
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const data = Object.fromEntries(fd) as Record<string, string>;
     const r = schema.safeParse(data);
+
     if (!r.success) {
       const errs: Record<string, string> = {};
       r.error.issues.forEach((i) => { errs[i.path[0] as string] = i.message; });
       setErrors(errs);
+      setFormError("Please fix the highlighted fields below and try again.");
+      const first = r.error.issues[0]?.path[0] as string | undefined;
+      if (first) {
+        const el = form.querySelector<HTMLElement>(`[name="${first}"]`);
+        el?.focus();
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
+
     setErrors({});
-    const msg =
-      `Hi Nyeneng, I'd like a quote.\n\n` +
-      `Name: ${r.data.name}\n` +
-      `Contact: ${r.data.contact}\n` +
-      `Service: ${r.data.service}\n` +
-      `Location: ${r.data.location}` +
-      (r.data.details ? `\n\nDetails: ${r.data.details}` : "");
-    window.open(whatsappLink(msg), "_blank", "noopener");
-    setSent(true);
+    setSubmitting(true);
+    try {
+      const msg =
+        `Hi Nyeneng, I'd like a quote.\n\n` +
+        `Name: ${r.data.name}\n` +
+        `Contact: ${r.data.contact}\n` +
+        `Service: ${r.data.service}\n` +
+        `Location: ${r.data.location}` +
+        (r.data.details ? `\n\nDetails: ${r.data.details}` : "");
+      const win = window.open(whatsappLink(msg), "_blank", "noopener");
+      if (!win) {
+        setFormError("We couldn't open WhatsApp — please allow pop-ups or tap the button again.");
+        return;
+      }
+      setSent(true);
+      form.reset();
+    } catch {
+      setFormError("Something went wrong. Please try again or call us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -173,49 +246,81 @@ function QuoteForm({ services }: { services: string[] }) {
 
         <form
           onSubmit={onSubmit}
+          noValidate
+          aria-busy={submitting}
           className="mx-auto mt-8 grid max-w-2xl gap-4 rounded-3xl border bg-card p-5 shadow-card md:mt-10 md:grid-cols-2 md:p-8"
         >
-          <FormField label="Full name" name="name" placeholder="Your name" error={errors.name} required />
-          <FormField label="Phone or email" name="contact" placeholder="072 123 4567" error={errors.contact} required />
+          {formError && (
+            <div role="alert" className="md:col-span-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              {formError}
+            </div>
+          )}
+
+          <FormField label="Full name" name="name" placeholder="Your name" autoComplete="name" error={errors.name} required onChange={() => clearFieldError("name")} />
+          <FormField label="Phone or email" name="contact" placeholder="072 123 4567 or you@email.com" autoComplete="tel" error={errors.contact} required onChange={() => clearFieldError("contact")} />
+
           <div className="flex flex-col gap-1.5 md:col-span-1">
-            <label className="text-sm font-medium text-accent">
+            <label htmlFor="qf-service" className="text-sm font-medium text-accent">
               Service <span className="text-destructive">*</span>
             </label>
             <select
+              id="qf-service"
               name="service"
               defaultValue=""
-              className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              onChange={() => clearFieldError("service")}
+              aria-invalid={!!errors.service}
+              aria-describedby={errors.service ? "qf-service-err" : undefined}
+              className={`h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${errors.service ? "border-destructive" : ""}`}
             >
               <option value="" disabled>Select a service…</option>
               {services.map((s) => <option key={s} value={s}>{s}</option>)}
               <option value="Other / Not sure">Other / Not sure</option>
             </select>
-            {errors.service && <p className="text-xs text-destructive">{errors.service}</p>}
+            {errors.service && <p id="qf-service-err" className="text-xs text-destructive">{errors.service}</p>}
           </div>
-          <FormField label="Project location" name="location" placeholder="e.g. Rustenburg, Tlhabane" error={errors.location} required />
+
+          <FormField label="Project location" name="location" placeholder="e.g. Rustenburg, Tlhabane" autoComplete="address-level2" error={errors.location} required onChange={() => clearFieldError("location")} />
+
           <div className="flex flex-col gap-1.5 md:col-span-2">
-            <label className="text-sm font-medium text-accent">Project details (optional)</label>
+            <label htmlFor="qf-details" className="text-sm font-medium text-accent">Project details (optional)</label>
             <textarea
+              id="qf-details"
               name="details"
               rows={4}
               maxLength={600}
+              onChange={() => clearFieldError("details")}
+              aria-invalid={!!errors.details}
+              aria-describedby={errors.details ? "qf-details-err" : undefined}
               placeholder="Scope, size, timeline, anything else we should know…"
-              className="rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className={`rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${errors.details ? "border-destructive" : ""}`}
             />
+            {errors.details && <p id="qf-details-err" className="text-xs text-destructive">{errors.details}</p>}
           </div>
+
           <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
               By submitting you agree to be contacted on WhatsApp at {SITE.phone}.
             </p>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95"
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Send className="h-4 w-4" /> Send via WhatsApp
+              {submitting ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" aria-hidden />
+                  Opening WhatsApp…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" /> Send via WhatsApp
+                </>
+              )}
             </button>
           </div>
+
           {sent && (
-            <div className="md:col-span-2 flex items-start gap-3 rounded-2xl bg-secondary p-4">
+            <div role="status" className="md:col-span-2 flex items-start gap-3 rounded-2xl bg-secondary p-4">
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
               <p className="text-sm text-accent">
                 Thanks! Your enquiry is opening in WhatsApp. If nothing happened, call us on{" "}
@@ -237,23 +342,32 @@ function QuoteForm({ services }: { services: string[] }) {
 }
 
 function FormField({
-  label, name, type = "text", placeholder, error, required,
+  label, name, type = "text", placeholder, error, required, autoComplete, onChange,
 }: {
-  label: string; name: string; type?: string; placeholder?: string; error?: string; required?: boolean;
+  label: string; name: string; type?: string; placeholder?: string;
+  error?: string; required?: boolean; autoComplete?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const id = `qf-${name}`;
+  const errId = `${id}-err`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-accent">
+      <label htmlFor={id} className="text-sm font-medium text-accent">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
       <input
+        id={id}
         name={name}
         type={type}
         maxLength={255}
         placeholder={placeholder}
-        className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        autoComplete={autoComplete}
+        onChange={onChange}
+        aria-invalid={!!error}
+        aria-describedby={error ? errId : undefined}
+        className={`h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${error ? "border-destructive" : ""}`}
       />
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p id={errId} className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
