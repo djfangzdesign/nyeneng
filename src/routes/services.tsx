@@ -169,28 +169,64 @@ function ServicesPage() {
 function QuoteForm({ services }: { services: string[] }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const clearFieldError = (name: string) => {
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    if (submitting) return;
+    setFormError(null);
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const data = Object.fromEntries(fd) as Record<string, string>;
     const r = schema.safeParse(data);
+
     if (!r.success) {
       const errs: Record<string, string> = {};
       r.error.issues.forEach((i) => { errs[i.path[0] as string] = i.message; });
       setErrors(errs);
+      setFormError("Please fix the highlighted fields below and try again.");
+      const first = r.error.issues[0]?.path[0] as string | undefined;
+      if (first) {
+        const el = form.querySelector<HTMLElement>(`[name="${first}"]`);
+        el?.focus();
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
+
     setErrors({});
-    const msg =
-      `Hi Nyeneng, I'd like a quote.\n\n` +
-      `Name: ${r.data.name}\n` +
-      `Contact: ${r.data.contact}\n` +
-      `Service: ${r.data.service}\n` +
-      `Location: ${r.data.location}` +
-      (r.data.details ? `\n\nDetails: ${r.data.details}` : "");
-    window.open(whatsappLink(msg), "_blank", "noopener");
-    setSent(true);
+    setSubmitting(true);
+    try {
+      const msg =
+        `Hi Nyeneng, I'd like a quote.\n\n` +
+        `Name: ${r.data.name}\n` +
+        `Contact: ${r.data.contact}\n` +
+        `Service: ${r.data.service}\n` +
+        `Location: ${r.data.location}` +
+        (r.data.details ? `\n\nDetails: ${r.data.details}` : "");
+      const win = window.open(whatsappLink(msg), "_blank", "noopener");
+      if (!win) {
+        setFormError("We couldn't open WhatsApp — please allow pop-ups or tap the button again.");
+        return;
+      }
+      setSent(true);
+      form.reset();
+    } catch {
+      setFormError("Something went wrong. Please try again or call us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -210,49 +246,81 @@ function QuoteForm({ services }: { services: string[] }) {
 
         <form
           onSubmit={onSubmit}
+          noValidate
+          aria-busy={submitting}
           className="mx-auto mt-8 grid max-w-2xl gap-4 rounded-3xl border bg-card p-5 shadow-card md:mt-10 md:grid-cols-2 md:p-8"
         >
-          <FormField label="Full name" name="name" placeholder="Your name" error={errors.name} required />
-          <FormField label="Phone or email" name="contact" placeholder="072 123 4567" error={errors.contact} required />
+          {formError && (
+            <div role="alert" className="md:col-span-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              {formError}
+            </div>
+          )}
+
+          <FormField label="Full name" name="name" placeholder="Your name" autoComplete="name" error={errors.name} required onChange={() => clearFieldError("name")} />
+          <FormField label="Phone or email" name="contact" placeholder="072 123 4567 or you@email.com" autoComplete="tel" error={errors.contact} required onChange={() => clearFieldError("contact")} />
+
           <div className="flex flex-col gap-1.5 md:col-span-1">
-            <label className="text-sm font-medium text-accent">
+            <label htmlFor="qf-service" className="text-sm font-medium text-accent">
               Service <span className="text-destructive">*</span>
             </label>
             <select
+              id="qf-service"
               name="service"
               defaultValue=""
-              className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              onChange={() => clearFieldError("service")}
+              aria-invalid={!!errors.service}
+              aria-describedby={errors.service ? "qf-service-err" : undefined}
+              className={`h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${errors.service ? "border-destructive" : ""}`}
             >
               <option value="" disabled>Select a service…</option>
               {services.map((s) => <option key={s} value={s}>{s}</option>)}
               <option value="Other / Not sure">Other / Not sure</option>
             </select>
-            {errors.service && <p className="text-xs text-destructive">{errors.service}</p>}
+            {errors.service && <p id="qf-service-err" className="text-xs text-destructive">{errors.service}</p>}
           </div>
-          <FormField label="Project location" name="location" placeholder="e.g. Rustenburg, Tlhabane" error={errors.location} required />
+
+          <FormField label="Project location" name="location" placeholder="e.g. Rustenburg, Tlhabane" autoComplete="address-level2" error={errors.location} required onChange={() => clearFieldError("location")} />
+
           <div className="flex flex-col gap-1.5 md:col-span-2">
-            <label className="text-sm font-medium text-accent">Project details (optional)</label>
+            <label htmlFor="qf-details" className="text-sm font-medium text-accent">Project details (optional)</label>
             <textarea
+              id="qf-details"
               name="details"
               rows={4}
               maxLength={600}
+              onChange={() => clearFieldError("details")}
+              aria-invalid={!!errors.details}
+              aria-describedby={errors.details ? "qf-details-err" : undefined}
               placeholder="Scope, size, timeline, anything else we should know…"
-              className="rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className={`rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${errors.details ? "border-destructive" : ""}`}
             />
+            {errors.details && <p id="qf-details-err" className="text-xs text-destructive">{errors.details}</p>}
           </div>
+
           <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
               By submitting you agree to be contacted on WhatsApp at {SITE.phone}.
             </p>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95"
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Send className="h-4 w-4" /> Send via WhatsApp
+              {submitting ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" aria-hidden />
+                  Opening WhatsApp…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" /> Send via WhatsApp
+                </>
+              )}
             </button>
           </div>
+
           {sent && (
-            <div className="md:col-span-2 flex items-start gap-3 rounded-2xl bg-secondary p-4">
+            <div role="status" className="md:col-span-2 flex items-start gap-3 rounded-2xl bg-secondary p-4">
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
               <p className="text-sm text-accent">
                 Thanks! Your enquiry is opening in WhatsApp. If nothing happened, call us on{" "}
@@ -274,23 +342,32 @@ function QuoteForm({ services }: { services: string[] }) {
 }
 
 function FormField({
-  label, name, type = "text", placeholder, error, required,
+  label, name, type = "text", placeholder, error, required, autoComplete, onChange,
 }: {
-  label: string; name: string; type?: string; placeholder?: string; error?: string; required?: boolean;
+  label: string; name: string; type?: string; placeholder?: string;
+  error?: string; required?: boolean; autoComplete?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const id = `qf-${name}`;
+  const errId = `${id}-err`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-accent">
+      <label htmlFor={id} className="text-sm font-medium text-accent">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
       <input
+        id={id}
         name={name}
         type={type}
         maxLength={255}
         placeholder={placeholder}
-        className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        autoComplete={autoComplete}
+        onChange={onChange}
+        aria-invalid={!!error}
+        aria-describedby={error ? errId : undefined}
+        className={`h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring ${error ? "border-destructive" : ""}`}
       />
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p id={errId} className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
