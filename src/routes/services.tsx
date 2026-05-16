@@ -6,7 +6,41 @@ import {
   CheckCircle2, ArrowRight, Send,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import {
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+} from "@/components/ui/accordion";
 import { SITE, whatsappLink } from "@/lib/site";
+
+const FAQS = [
+  {
+    q: "Do you issue an Electrical Certificate of Compliance (COC)?",
+    a: "Yes. All residential electrical work — new installs, DB boards, repairs and additions — is signed off by a registered electrician and we issue a valid Certificate of Compliance (COC) on completion. This is the legal document banks, insurers and property transfers require.",
+  },
+  {
+    q: "How long does borehole drilling and equipping take?",
+    a: "A typical residential borehole is drilled in 1–2 days once the site is accessible. Equipping (pump, pipework, tank stand, JoJo tank and electrical connection) usually adds another 2–4 days depending on depth, yield and the storage setup you choose.",
+  },
+  {
+    q: "Do you supply and install genuine JoJo tanks?",
+    a: "Yes — we supply genuine JoJo tanks (not look-alikes) in standard sizes from 750L up to 10,000L+. Installation includes a level base or stand, inlet/outlet plumbing, overflow, and connection to your booster pump or municipal backup line.",
+  },
+  {
+    q: "How long does it take to build a new house?",
+    a: "A standard 3-bedroom home typically takes 4–6 months from foundation to handover, weather and material lead times permitting. We give you a project programme upfront and stage payments are linked to completed milestones — no surprises.",
+  },
+  {
+    q: "Which areas do you service?",
+    a: "We are based in Rustenburg and work across the North West, including Tlhabane, Phokeng, Boitekong, Marikana, Mogwase and surrounding farms and townships. For larger projects we travel further — contact us with your location.",
+  },
+  {
+    q: "How do I get a quote and is it free?",
+    a: "Quotes are 100% free. Send us your details via the form on this page or WhatsApp us directly — we usually reply within a few hours during business days, and arrange a free on-site assessment for larger projects.",
+  },
+  {
+    q: "Do you offer a workmanship guarantee?",
+    a: "Yes. All our work carries a workmanship guarantee, and we stand by every site we leave. Manufacturer warranties (pumps, tanks, geysers, materials) are passed through to you in full.",
+  },
+];
 
 const SITE_URL = "https://nyeneng-builds-futures.lovable.app";
 const SERVICES_URL = `${SITE_URL}/services`;
