@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -18,82 +17,46 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with: { bun-version: latest }
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
-        continue-on-error: false
 
       - name: Verify critical dependencies
         run: |
-          for pkg in react @tanstack/react-router lucide-react; do
+          for pkg in react react-dom react-router-dom react-helmet-async lucide-react vite; do
             test -f "node_modules/$pkg/package.json" \
-              && echo "✅ $pkg installed" \
-              || (echo "❌ $pkg missing" && exit 1)
+              && echo "OK $pkg" \
+              || (echo "MISSING $pkg" && exit 1)
           done
 
       - name: Typecheck
         run: bunx tsc --noEmit
 
-      - name: Build with Vite
+      - name: Build
         run: bun run build
-        env:
-          VITE_APP_TITLE: 'Nyeneng Trading & Projects'
-          VITE_APP_URL: 'https://www.nyeneng.co.za'
-
 
       - name: Verify build output
         run: |
-          echo "📂 Checking dist directory..."
           ls -la dist/
-          echo ""
-          echo "📄 Checking special files..."
-          test -f dist/CNAME && echo "✅ CNAME found" || echo "❌ CNAME missing"
-          test -f dist/.nojekyll && echo "✅ .nojekyll found" || echo "❌ .nojekyll missing"
-          test -f dist/404.html && echo "✅ 404.html found" || echo "❌ 404.html missing"
-          echo ""
-          echo "📦 Total files in dist:"
-          find dist -type f | wc -l
-        continue-on-error: true
+          test -f dist/index.html
+          test -f dist/404.html
+          test -f dist/CNAME
+          test -f dist/sitemap.xml
+          test -f dist/.nojekyll
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
 
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    name: Deploy
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          timeout: 600000
-
-      - name: Deployment status
-        if: always()
-        run: |
-          echo "🚀 Deployment Status: ${{ job.status }}"
-          echo "📍 Page URL: ${{ steps.deployment.outputs.page_url }}"
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ Site deployed successfully!"
-            echo "Visit: https://djfangz-design.github.io"
-            echo "Visit: https://www.nyeneng.co.za"
-          else
-            echo "❌ Deployment failed - check logs above"
-          fi
