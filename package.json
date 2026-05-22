@@ -1,75 +1,36 @@
 {
   "name": "nyeneng-trading-projects",
   "version": "1.0.0",
-  "description": "Nyeneng Trading & Projects - Professional Business Solutions",
+  "private": true,
   "type": "module",
-  "main": "src/main.tsx",
   "homepage": "https://www.nyeneng.co.za",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/djfangz-design/djfangz-design.github.io.git"
-  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext .ts,.tsx --fix",
-    "type-check": "tsc --noEmit",
+    "dev": "vite --port 8080",
+    "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,md}\"",
-    "clean": "rm -rf dist node_modules .next",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@radix-ui/react-slot": "^1.2.4",
-    "@tanstack/react-router": "^1.170.4",
+    "@radix-ui/react-accordion": "^1.2.1",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "date-fns": "^2.30.0",
-    "lucide-react": "^1.16.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "tailwind-merge": "^2.2.0"
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.469.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
+    "react-router-dom": "^6.28.0",
+    "tailwind-merge": "^2.5.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^20.10.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@typescript-eslint/eslint-plugin": "^6.13.0",
-    "@typescript-eslint/parser": "^6.13.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/user-event": "^14.5.1",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.55.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.32",
-    "prettier": "^3.1.0",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.0",
-    "vite": "^5.0.0",
-    "vitest": "^1.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "bun": ">=1.0.0"
-  },
-  "keywords": [
-    "react",
-    "vite",
-    "github-pages",
-    "portfolio",
-    "business",
-    "nyeneng"
-  ],
-  "author": "djfangz-design",
-  "license": "MIT"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "tw-animate-css": "^1.0.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
 }
