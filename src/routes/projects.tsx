@@ -1,21 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-
-export const Route = createFileRoute("/projects")({
-  head: () => ({
-    meta: [
-      { title: "Projects & Gallery | Nyeneng Construction Rustenburg" },
-      { name: "description", content: "Explore Nyeneng's portfolio: residential construction, borehole installations, electrical, plumbing, tiling and welding projects across Rustenburg." },
-      { property: "og:title", content: "Projects — Nyeneng Trading & Projects" },
-      { property: "og:description", content: "Construction, water, electrical, plumbing, tiling and welding work delivered across the North West." },
-      { property: "og:url", content: "/projects" },
-    ],
-    links: [{ rel: "canonical", href: "/projects" }],
-  }),
-  component: ProjectsPage,
-});
+import { Seo } from "@/components/Seo";
 
 type Cat = "All" | "Construction" | "Water" | "Electrical" | "Plumbing" | "Tiling" | "Welding";
 const CATS: Cat[] = ["All", "Construction", "Water", "Electrical", "Plumbing", "Tiling", "Welding"];
@@ -38,13 +25,19 @@ const PROJECTS: { id: number; cat: Exclude<Cat, "All">; title: string; img: stri
   { id: 12, cat: "Electrical", title: "Solar Backup Installation", img: u("photo-1509391366360-2e959784a276") },
 ];
 
-function ProjectsPage() {
+export default function ProjectsPage() {
   const [cat, setCat] = useState<Cat>("All");
   const [open, setOpen] = useState<typeof PROJECTS[number] | null>(null);
   const list = cat === "All" ? PROJECTS : PROJECTS.filter((p) => p.cat === cat);
 
   return (
     <>
+      <Seo
+        title="Projects & Gallery | Nyeneng Construction Rustenburg"
+        description="Explore Nyeneng's portfolio: residential construction, borehole installations, electrical, plumbing, tiling and welding projects across Rustenburg."
+        path="/projects"
+      />
+
       <PageHeader
         eyebrow="Projects"
         title="Real work. Real homes. Real communities."
@@ -73,12 +66,7 @@ function ProjectsPage() {
               onClick={() => setOpen(p)}
               className={`group relative overflow-hidden rounded-2xl shadow-card ${p.tall ? "row-span-2 aspect-[3/4]" : "aspect-square"}`}
             >
-              <img
-                src={p.img}
-                alt={p.title}
-                loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
+              <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-90" />
               <div className="absolute bottom-0 left-0 p-4 text-left text-white">
                 <div className="text-[10px] font-semibold uppercase tracking-widest text-white/80">{p.cat}</div>

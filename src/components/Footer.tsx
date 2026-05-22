@@ -1,5 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { NAV, SITE, whatsappLink } from "@/lib/site";
+import logoIcon from "@/assets/logo-icon.png";
 
 const Facebook = (props: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={props.className}>
@@ -13,8 +15,6 @@ const Instagram = (props: { className?: string }) => (
     <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
   </svg>
 );
-import { NAV, SITE, whatsappLink } from "@/lib/site";
-import logoIcon from "@/assets/logo-icon.png";
 
 const SERVICES = [
   "Residential Construction",
@@ -54,13 +54,11 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-accent-foreground/60">
-            Quick Links
-          </h4>
+          <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--brand-cream)]/60">Quick Links</h4>
           <ul className="mt-4 space-y-2 text-sm">
             {NAV.map((n) => (
               <li key={n.to}>
-                <Link to={n.to} className="hover:text-primary-foreground hover:underline">
+                <Link to={n.to} className="hover:text-white hover:underline">
                   {n.label}
                 </Link>
               </li>
@@ -69,20 +67,16 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-accent-foreground/60">
-            Services
-          </h4>
+          <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--brand-cream)]/60">Services</h4>
           <ul className="mt-4 space-y-2 text-sm">
             {SERVICES.map((s) => (
-              <li key={s} className="text-accent-foreground/80">{s}</li>
+              <li key={s} className="text-[var(--brand-cream)]/80">{s}</li>
             ))}
           </ul>
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-accent-foreground/60">
-            Contact
-          </h4>
+          <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--brand-cream)]/60">Contact</h4>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex gap-2"><Phone className="h-4 w-4 mt-0.5 shrink-0" /><a href={`tel:${SITE.phone}`}>{SITE.phone}</a></li>
             <li className="flex gap-2"><Mail className="h-4 w-4 mt-0.5 shrink-0" /><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
@@ -98,7 +92,7 @@ export function Footer() {
           </a>
         </div>
       </div>
-      <div className="border-t border-white/10 py-5 text-center text-xs text-accent-foreground/60">
+      <div className="border-t border-white/10 py-5 text-center text-xs text-[var(--brand-cream)]/60">
         © {new Date().getFullYear()} {SITE.name}. All rights reserved.
       </div>
     </footer>

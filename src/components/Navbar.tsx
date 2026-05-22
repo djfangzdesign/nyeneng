@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
@@ -21,9 +21,7 @@ export function Navbar() {
   return (
     <header
       className={`sticky top-0 z-40 transition-all ${
-        scrolled
-          ? "bg-background/90 backdrop-blur shadow-card"
-          : "bg-background/70 backdrop-blur-sm"
+        scrolled ? "bg-background/90 backdrop-blur shadow-card" : "bg-background/70 backdrop-blur-sm"
       }`}
     >
       <div className="container-x flex h-16 items-center justify-between gap-4">
@@ -39,15 +37,18 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 md:flex">
           {NAV.map((n) => (
-            <Link
+            <NavLink
               key={n.to}
               to={n.to}
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-secondary hover:text-accent"
-              activeProps={{ className: "bg-secondary text-accent" }}
-              activeOptions={{ exact: n.to === "/" }}
+              end={n.to === "/"}
+              className={({ isActive }) =>
+                `rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-accent ${
+                  isActive ? "bg-secondary text-accent" : "text-foreground/80"
+                }`
+              }
             >
               {n.label}
-            </Link>
+            </NavLink>
           ))}
           <a
             href={whatsappLink()}
@@ -72,15 +73,18 @@ export function Navbar() {
         <div className="border-t bg-background md:hidden">
           <div className="container-x flex flex-col gap-1 py-3">
             {NAV.map((n) => (
-              <Link
+              <NavLink
                 key={n.to}
                 to={n.to}
-                className="rounded-md px-3 py-3 text-base font-medium text-foreground/90 hover:bg-secondary"
-                activeProps={{ className: "bg-secondary text-accent" }}
-                activeOptions={{ exact: n.to === "/" }}
+                end={n.to === "/"}
+                className={({ isActive }) =>
+                  `rounded-md px-3 py-3 text-base font-medium hover:bg-secondary ${
+                    isActive ? "bg-secondary text-accent" : "text-foreground/90"
+                  }`
+                }
               >
                 {n.label}
-              </Link>
+              </NavLink>
             ))}
             <a
               href={whatsappLink()}
