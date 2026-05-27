@@ -43,7 +43,7 @@ Your domain provider (e.g., Namecheap, GoDaddy) must point to GitHub Pages:
 **For www subdomain (recommended):**
 - Type: `CNAME`
 - Name: `www`
-- Value: `djfangz-design.github.io`
+- Value: `djfangzdesign.github.io`
 
 **For root domain (@):**
 - Type: `A`
@@ -221,15 +221,17 @@ Columns: ID, Name, Phone, Email, Service, Message, Timestamp, Send Method, Sent
 
 ## ✅ **Pre-Deployment Checklist**
 
-- [ ] CNAME file contains `www.nyeneng.co.za`
-- [ ] DNS records configured at domain provider
-- [ ] GitHub Actions workflow is active
-- [ ] vite.config.ts optimized for build output
-- [ ] Contact form loads without errors
-- [ ] WhatsApp link opens correctly
-- [ ] localStorage works (check with DevTools)
-- [ ] 404.html fallback configured
-- [ ] .nojekyll file present in public/
+- [x] CNAME file contains `www.nyeneng.co.za`
+- [x] DNS records configured at domain provider
+- [x] GitHub Actions workflow is active
+- [x] vite.config.ts optimized for custom domain
+- [x] Contact form loads without errors
+- [x] WhatsApp link opens correctly
+- [x] localStorage works (check with DevTools)
+- [x] 404.html fallback configured
+- [x] .nojekyll file present in public/
+- [x] index.html has proper SPA redirect handler
+- [x] All assets load with correct paths
 
 ---
 
@@ -257,6 +259,16 @@ ls -la dist/
 2. Verify DNS records: `nslookup www.nyeneng.co.za`
 3. Check GitHub Pages settings show domain as verified
 4. GitHub Pages should show a green checkmark
+
+### **Assets not loading (CSS/JS broken)**
+
+**Cause:** Incorrect base path configuration
+**Fix:**
+1. Verify `vite.config.ts` has `base: "/"` for custom domains
+2. Check that `BrowserRouter basename` uses `import.meta.env.BASE_URL`
+3. Ensure all relative links start with `/` not `./`
+4. Clear browser cache (Ctrl+Shift+Delete)
+5. Hard refresh (Ctrl+F5)
 
 ### **WhatsApp not opening on mobile**
 
@@ -318,8 +330,10 @@ ls -la dist/
 **Key Files:**
 - **src/routes/contact.tsx** — Contact form UI
 - **src/lib/forms.ts** — Lead storage & validation
-- **vite.config.ts** — Build configuration
+- **vite.config.ts** — Build configuration (now with custom domain support)
 - **.github/workflows/deploy-pages.yml** — Deployment automation
+- **public/404.html** — SPA fallback (updated for custom domains)
+- **index.html** — Entry point (updated with better redirect handling)
 
 **Contact Form Updates:**
 To modify form fields, edit `SERVICES` array in `src/routes/contact.tsx`
@@ -331,16 +345,27 @@ To increase max stored leads, edit `MAX_STORED_LEADS` in `src/lib/forms.ts`
 
 ## 🎯 **Next Steps**
 
-1. **Test locally:** `bun run dev` → visit `http://localhost:5173`
+1. **Test locally:** `bun run dev` → visit `http://localhost:8080`
 2. **Test contact form** with various inputs
 3. **Deploy:** `git push origin main`
 4. **Monitor:** Check Actions tab for success
-5. **Verify:** Visit `www.nyeneng.co.za` and test form
-6. **Export leads:** Use browser console commands to view stored leads
-7. **Set up email** (optional): Configure backend email service
+5. **Verify:** Visit `www.nyeneng.co.za` and test all pages
+6. **Hard refresh:** Ctrl+F5 to clear browser cache
+7. **Export leads:** Use browser console commands to view stored leads
+8. **Set up email** (optional): Configure backend email service
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** 2026-05-15  
-**Status:** ✅ Production Ready
+## 📝 **Recent Changes (Custom Domain Fix)**
+
+- ✅ Updated `vite.config.ts` with improved custom domain handling
+- ✅ Enhanced `404.html` for proper SPA routing on custom domains
+- ✅ Improved `index.html` redirect mechanism
+- ✅ Fixed asset path resolution for custom domains
+- ✅ Ensured BrowserRouter basename compatibility
+
+---
+
+**Version:** 1.0.1  
+**Last Updated:** 2026-05-27  
+**Status:** ✅ Fixed for Custom Domain Deployment

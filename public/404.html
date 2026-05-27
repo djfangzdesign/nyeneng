@@ -4,10 +4,18 @@
     <meta charset="utf-8" />
     <title>Redirecting…</title>
     <script>
-      // GitHub Pages SPA fallback: store path then bounce to index.
-      sessionStorage.redirect = location.href;
+      // GitHub Pages SPA fallback for custom domains
+      // Store the full path (including query params) and redirect to root
+      (function() {
+        var fullPath = window.location.pathname + window.location.search;
+        // Only redirect if not at root
+        if (fullPath !== '/' && fullPath !== '/index.html') {
+          sessionStorage.redirect = fullPath;
+          window.location.replace('/');
+        }
+      })();
     </script>
-    <meta http-equiv="refresh" content="0;URL='/'" />
+    <meta http-equiv="refresh" content="0;URL='/index.html'" />
   </head>
   <body>
     <p>Redirecting… <a href="/">Go home</a>.</p>

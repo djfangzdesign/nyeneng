@@ -9,13 +9,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <!-- GitHub Pages SPA redirect (paired with public/404.html) -->
+    <!-- GitHub Pages SPA redirect handler (paired with public/404.html) -->
     <script>
       (function () {
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== location.href) {
-          history.replaceState(null, "", redirect.replace(location.origin, ""));
+          // Remove leading slash for React Router if using base "/"
+          var path = redirect.replace(location.origin, '').replace(/^\//,'') || '/';
+          history.replaceState(null, null, path);
         }
       })();
     </script>
