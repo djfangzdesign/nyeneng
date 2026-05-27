@@ -20,7 +20,7 @@ export default function AboutPage() {
   return (
     <>
       <Seo
-        title="About Nyeneng Trading & Projects | Rustenburg Construction Company"
+        title="About Nyeneng | Rustenburg Construction Company"
         description="Founded in 2016, Nyeneng is a Rustenburg-based multi-trade construction & infrastructure company serving North West province."
         path="/about"
         jsonLd={[
