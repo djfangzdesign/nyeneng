@@ -1,0 +1,11 @@
+# Nyeneng Trading & Projects
+
+> Rustenburg-based multi-trade construction and infrastructure company serving the North West province of South Africa since 2016. Services include residential construction, borehole drilling, JoJo tanks, plumbing, electrical (COC), welding, tiling and materials supply.
+
+## Pages
+
+- [Home](/): Overview of Nyeneng's services, stats and trust signals.
+- [About](/about): Company history, mission, values and directors.
+- [Services](/services): Seven core trades with details and FAQs.
+- [Projects](/projects): Selected completed work across Rustenburg and the North West.
+- [Contact](/contact): Quote request form, phone, email, WhatsApp and location.
