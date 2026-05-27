@@ -141,12 +141,13 @@ export default function ContactPage() {
 }
 
 function Field({ label, name, type = "text", error, required }: { label: string; name: string; type?: string; error?: string; required?: boolean; }) {
+  const id = `contact-${name}`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-accent">
+      <label htmlFor={id} className="text-sm font-medium text-accent">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
-      <input name={name} type={type} maxLength={255} className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+      <input id={id} name={name} type={type} maxLength={255} className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
