@@ -5,7 +5,7 @@ import path from "path";
 
 // For custom domains (www.nyeneng.co.za): use "/"
 // For project pages (e.g., /nyeneng/): set VITE_BASE_PATH=/nyeneng/ in CI
-const rawBase = process.env.VITE_BASE_PATH ?? "/";
+const rawBase = process.env.VITE_BASE_PATH ?? "/nyeneng/";
 const basePath = rawBase === "/" ? "/" : `/${rawBase.replace(/^\/+|\/+$/g, "")}/`;
 
 export default defineConfig({
