@@ -26,7 +26,7 @@ export function Navbar() {
     >
       <div className="container-x flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src={logoIcon} alt="Nyeneng logo" width={44} height={44} className="h-11 w-11 rounded-full" />
+          <img src={logoIcon} alt="Nyeneng Trading and Projects company logo" width={44} height={44} className="h-11 w-11 rounded-full" />
           <div className="leading-tight">
             <div className="font-display text-base font-extrabold tracking-wide text-[var(--brand-dark)]">NYENENG</div>
             <div className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[var(--brand-copper)]">
