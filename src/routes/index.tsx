@@ -54,8 +54,8 @@ export default function HomePage() {
   return (
     <>
       <Seo
-        title="Nyeneng Trading & Projects | Construction & Borehole Drilling Rustenburg"
-        description="Construction company in Rustenburg offering borehole drilling, JoJo tank installation, plumbing, electrical, welding & tiling across North West."
+        title="Construction & Borehole Drilling in Rustenburg | Nyeneng"
+        description="Rustenburg construction company offering borehole drilling, JoJo tanks, plumbing, electrical, welding & tiling across North West."
         path="/"
         jsonLd={[
           {
@@ -69,7 +69,7 @@ export default function HomePage() {
       />
 
       <section className="relative overflow-hidden">
-        <img src={heroImg} alt="Nyeneng construction site in Rustenburg at golden hour" width={1920} height={1280} className="absolute inset-0 h-full w-full object-cover" />
+        <img src={heroImg} alt="Nyeneng construction site in Rustenburg at golden hour" width={1920} height={1280} fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="container-x relative py-24 md:py-36">
           <div className="max-w-2xl animate-float-up text-white">

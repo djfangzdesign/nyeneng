@@ -90,20 +90,20 @@ export default function ContactPage() {
                 <Field label="Phone / WhatsApp" name="phone" type="tel" error={errors.phone} required />
                 <Field label="Email (optional)" name="email" type="email" error={errors.email} />
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-accent">
+                  <label htmlFor="contact-service" className="text-sm font-medium text-accent">
                     Service <span className="text-destructive">*</span>
                   </label>
-                  <select name="service" defaultValue="" className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                  <select id="contact-service" name="service" defaultValue="" className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
                     <option value="" disabled>Select a service…</option>
                     {SERVICES.map((s) => (<option key={s} value={s}>{s}</option>))}
                   </select>
                   {errors.service && <p className="text-xs text-destructive">{errors.service}</p>}
                 </div>
                 <div className="sm:col-span-2 flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-accent">
+                  <label htmlFor="contact-message" className="text-sm font-medium text-accent">
                     Project details <span className="text-destructive">*</span>
                   </label>
-                  <textarea name="message" rows={5} maxLength={1000} className="rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Tell us about your project, location and timeline…" />
+                  <textarea id="contact-message" name="message" rows={5} maxLength={1000} className="rounded-xl border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Tell us about your project, location and timeline…" />
                   {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
                 </div>
                 <button type="submit" disabled={loading} className="sm:col-span-2 flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-95 disabled:opacity-50">
@@ -141,12 +141,13 @@ export default function ContactPage() {
 }
 
 function Field({ label, name, type = "text", error, required }: { label: string; name: string; type?: string; error?: string; required?: boolean; }) {
+  const id = `contact-${name}`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-accent">
+      <label htmlFor={id} className="text-sm font-medium text-accent">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
-      <input name={name} type={type} maxLength={255} className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+      <input id={id} name={name} type={type} maxLength={255} className="h-11 rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );

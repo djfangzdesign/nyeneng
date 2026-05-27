@@ -80,8 +80,8 @@ export default function ServicesPage() {
   return (
     <>
       <Seo
-        title="Construction, Boreholes, Plumbing & Electrical Services in Rustenburg | Nyeneng"
-        description="Trusted Rustenburg builders for new homes, borehole drilling, JoJo tanks, plumbing, electrical (COC), welding, tiling & materials supply across the North West."
+        title="Services — Construction, Boreholes & More | Nyeneng"
+        description="Rustenburg builders for new homes, boreholes, JoJo tanks, plumbing, electrical (COC), welding, tiling & materials supply."
         path="/services"
         jsonLd={[servicesJsonLd, breadcrumb, faq]}
       />
